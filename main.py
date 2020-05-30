@@ -48,42 +48,42 @@ driver.get(f"https://islands.smp.uq.edu.au/village.php?{VILLAGE}")
 print('INFO  Fetching residents...')
 
 # DEBUG: Get all the residents from a JSON
-resident_list = json.load(open('backup.json'))
+# resident_list = json.load(open('backup.json'))
 
-# resident_list = []
+resident_list = []
 
-# for i in HOUSE_LIST:
+for i in HOUSE_LIST:
 
-#     driver.execute_script(f"getHouse({i - 1})")
-#     time.sleep(1.4)
-#     resident_table = driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div/table[1]")
-#     resident_rows = resident_table.find_elements_by_tag_name("tr")
+    driver.execute_script(f"getHouse({i - 1})")
+    time.sleep(1.4)
+    resident_table = driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div/table[1]")
+    resident_rows = resident_table.find_elements_by_tag_name("tr")
 
-#     for row in resident_rows:
-#         name = row.find_element_by_class_name("resident").text
-#         gender = row.find_element_by_class_name("gender").text
-#         age = row.find_element_by_class_name("age").text
-#         resident_link = row.find_element_by_tag_name("a")
-#         resident_id = resident_link.get_attribute("href")[-10:]
+    for row in resident_rows:
+        name = row.find_element_by_class_name("resident").text
+        gender = row.find_element_by_class_name("gender").text
+        age = row.find_element_by_class_name("age").text
+        resident_link = row.find_element_by_tag_name("a")
+        resident_id = resident_link.get_attribute("href")[-10:]
 
-#         if gender == "♀":
-#             gender = "female"
-#         elif gender == "♂":
-#             gender = "male"
+        if gender == "♀":
+            gender = "female"
+        elif gender == "♂":
+            gender = "male"
 
-#         if gender == GENDER and (int(age) >= 20 and int(age) <= 79):
-#             if VERBOSE:
-#                 print(f'DEBUG    Adding {name} ({gender}, {age}) from {i}')
-#             resident_list.append(
-#                 {
-#                     "name": name,
-#                     "gender": gender,
-#                     "age": age,
-#                     "id": resident_id,
-#                     "home_num": i,
-#                     "tests": {},
-#                 }
-#             )
+        if gender == GENDER and (int(age) >= 20 and int(age) <= 79):
+            if VERBOSE:
+                print(f'DEBUG    Adding {name} ({gender}, {age}) from {i}')
+            resident_list.append(
+                {
+                    "name": name,
+                    "gender": gender,
+                    "age": age,
+                    "id": resident_id,
+                    "home_num": i,
+                    "tests": {},
+                }
+            )
 
 
 #
@@ -101,27 +101,27 @@ print('DEBUG  Not implemented!')
 #
 
 
-# print('INFO  Running tests on residents...')
+print('INFO  Running tests on residents...')
 
-# test_list = [
-#     "bloodpressure",
-#     "temperature",
-#     "peakflow",
-#     "vocalfreq",
-#     "memorycards",
-#     "questionnaire"
-# ]
+test_list = [
+    "bloodpressure",
+    "temperature",
+    "peakflow",
+    "vocalfreq",
+    "memorycards",
+    "questionnaire"
+]
 
-# for test in test_list:
-#     for resident in resident_list:
-#         if VERBOSE:
-#             print(f'DEBUG    Testing {resident["name"]} w/ {test}')
-#         # Go to the resident page
-#         driver.get(f"https://islands.smp.uq.edu.au/islander.php?id={resident['id']}")
+for test in test_list:
+    for resident in resident_list:
+        if VERBOSE:
+            print(f'DEBUG    Testing {resident["name"]} w/ {test}')
+        # Go to the resident page
+        driver.get(f"https://islands.smp.uq.edu.au/islander.php?id={resident['id']}")
 
-#         driver.execute_script(f'startTask("{test}")')
+        driver.execute_script(f'startTask("{test}")')
 
-#     time.sleep(110)
+    time.sleep(110)
 
 
 #
@@ -129,84 +129,84 @@ print('DEBUG  Not implemented!')
 #
 
 
-# print('INFO  Extracting test results from website...')
+print('INFO  Extracting test results from website...')
 
-# for resident in resident_list:
+for resident in resident_list:
 
-#     print(f' == {resident["name"]} ==')
+    print(f' == {resident["name"]} ==')
 
-#     # task_pane = driver.find_element_by_xpath('//*[@id="t2"]')
-#     driver.get(f"https://islands.smp.uq.edu.au/islander.php?id={resident['id']}")
-#     driver.execute_script("change_tab('t2')")
-#     tests = driver.find_elements_by_class_name("taskresult")
+    # task_pane = driver.find_element_by_xpath('//*[@id="t2"]')
+    driver.get(f"https://islands.smp.uq.edu.au/islander.php?id={resident['id']}")
+    driver.execute_script("change_tab('t2')")
+    tests = driver.find_elements_by_class_name("taskresult")
 
-#     print(f'DEBUG  {len(tests)} tests')
+    print(f'DEBUG  {len(tests)} tests')
 
-#     test_collection = {
-#         "bp": '',
-#         "temp": '',
-#         "flow": '',
-#         "vocal": '',
-#         "memory": '',
-#         "university": '',
-#         "run": '',
-#         "bike": '',
-#         "swim": '',
-#         "smoke": '',
-#         "drink": '',
-#         "chocolate": '',
-#         "pizza": '',
-#         "sleep": '',
-#         "attractive": '',
-#         "superpower": '',
-#     }
+    test_collection = {
+        "bp": '',
+        "temp": '',
+        "flow": '',
+        "vocal": '',
+        "memory": '',
+        "university": '',
+        "run": '',
+        "bike": '',
+        "swim": '',
+        "smoke": '',
+        "drink": '',
+        "chocolate": '',
+        "pizza": '',
+        "sleep": '',
+        "attractive": '',
+        "superpower": '',
+    }
 
-#     for test in tests:
+    for test in tests:
 
-#         try:
-#             test_type = test.find_element_by_class_name("taskresulttask").text
-#         except NoSuchElementException:
-#             if VERBOSE:
-#                 print('DEBUG  Skipping extra taskresult...')
-#             continue
+        try:
+            test_type = test.find_element_by_class_name("taskresulttask").text
+        except NoSuchElementException:
+            if VERBOSE:
+                print('DEBUG  Skipping extra taskresult...')
+            continue
 
-#         try:
-#             print(f'INFO  Processing {test_type} ({test.find_element_by_class_name("taskresultresult").text})')
-#         except Exception:
-#             pass
+        try:
+            print(f'INFO  Processing {test_type} ({test.find_element_by_class_name("taskresultresult").text})')
+        except Exception:
+            pass
 
-#         if test_type == "Blood Pressure":
-#             test_collection["bp"] = test.find_element_by_class_name("taskresultresult").text
-#         elif test_type == "Body Temperature":
-#             test_collection["temp"] = test.find_element_by_class_name("taskresultresult").text
-#         elif test_type == "Peak Flow Meter":
-#             test_collection["flow"] = test.find_element_by_class_name("taskresultresult").text
-#         elif test_type == "Vocal Frequency":
-#             test_collection["vocal"] = test.find_element_by_class_name("taskresultresult").text
-#         elif test_type == "Memory Test Cards":
-#             test_collection["memory"] = test.find_element_by_class_name("taskresultresult").text
-#         elif test_type == "":
-#             try:
-#                 survey_results = test.find_elements_by_class_name("taskresultresponse")
+        if test_type == "Blood Pressure":
+            test_collection["bp"] = test.find_element_by_class_name("taskresultresult").text
+        elif test_type == "Body Temperature":
+            test_collection["temp"] = test.find_element_by_class_name("taskresultresult").text
+        elif test_type == "Peak Flow Meter":
+            test_collection["flow"] = test.find_element_by_class_name("taskresultresult").text
+        elif test_type == "Vocal Frequency":
+            test_collection["vocal"] = test.find_element_by_class_name("taskresultresult").text
+        elif test_type == "Memory Test Cards":
+            test_collection["memory"] = test.find_element_by_class_name("taskresultresult").text
+        elif test_type == "":
+            try:
+                survey_results = test.find_elements_by_class_name("taskresultresponse")
 
-#                 test_collection["university"] = survey_results[0].text
-#                 test_collection["run"] = survey_results[1].text
-#                 test_collection["bike"] = survey_results[2].text
-#                 test_collection["swim"] = survey_results[3].text
-#                 test_collection["smoke"] = survey_results[4].text
-#                 test_collection["drink"] = survey_results[5].text
-#                 test_collection["chocolate"] = survey_results[6].text
-#                 test_collection["pizza"] = survey_results[7].text
-#                 test_collection["sleep"] = survey_results[8].text
-#                 test_collection["attractive"] = survey_results[9].text
-#                 test_collection["superpower"] = survey_results[10].text
-#             except Exception:
-#                 if VERBOSE:
-#                     print('DEBUG  Skipping blank test section...')
-#         else:
-#             print("WARN  Found a test we didn't perform...")
+                test_collection["university"] = survey_results[0].text
+                test_collection["run"] = survey_results[1].text
+                test_collection["bike"] = survey_results[2].text
+                test_collection["swim"] = survey_results[3].text
+                test_collection["smoke"] = survey_results[4].text
+                test_collection["drink"] = survey_results[5].text
+                test_collection["chocolate"] = survey_results[6].text
+                test_collection["pizza"] = survey_results[7].text
+                test_collection["sleep"] = survey_results[8].text
+                test_collection["attractive"] = survey_results[9].text
+                test_collection["superpower"] = survey_results[10].text
+            except Exception:
+                if VERBOSE:
+                    print('DEBUG  Skipping blank test section...')
+        else:
+            print("WARN  Found a test we didn't perform...")
 
-#     resident["tests"] = test_collection
+    resident["tests"] = test_collection
 
 # Export information to CSV / JSON
 
