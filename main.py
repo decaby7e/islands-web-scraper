@@ -21,10 +21,23 @@ from selenium.common.exceptions import NoSuchElementException
 from settings import *
 
 
+# TODO  Fetch a list of residents given a set of constraints
+#       Given: Village name, max house count
+# def get_resident_list(driver, gender='male', min_age='20', max_age='49', count=25, random=False):
+#     print('INFO   Obtaining consent from residents...')
+#     print('DEBUG  Not implemented!')
+
+
+# TODO  Ask for consent from residents
+# def get_consent(driver, resident_list):
+#     print('INFO   Obtaining consent from residents...')
+#     print('DEBUG  Not implemented!')
+
+
 # Get all the residents
 def get_resident_list(driver):
     
-    print('INFO  Fetching residents...')
+    print('INFO   Fetching residents...')
 
     resident_list = []
 
@@ -49,7 +62,7 @@ def get_resident_list(driver):
 
             if gender == GENDER and (int(age) >= 20 and int(age) <= 79):
                 if VERBOSE:
-                    print(f'DEBUG    Adding {name} ({gender}, {age}) from {i}')
+                    print(f'DEBUG  Adding {name} ({gender}, {age}) from {i}')
                 resident_list.append(
                     {
                         "name": name,
@@ -60,13 +73,6 @@ def get_resident_list(driver):
                         "tests": {},
                     }
                 )
-
-
-# Ask for consent from residents
-def get_consent(driver, resident_list):
-    print('INFO  Obtaining consent from residents...')
-
-    print('DEBUG  Not implemented!')
 
 
 # Run tests (w/ Javascript) on all residents
@@ -86,10 +92,9 @@ def run_tests(driver, resident_list):
     for test in test_list:
         for resident in resident_list:
             if VERBOSE:
-                print(f'DEBUG    Testing {resident["name"]} w/ {test}')
-            # Go to the resident page
-            driver.get(f"https://islands.smp.uq.edu.au/islander.php?id={resident['id']}")
+                print(f'DEBUG  Testing {resident["name"]} w/ {test}')
 
+            driver.get(f"https://islands.smp.uq.edu.au/islander.php?id={resident['id']}")
             driver.execute_script(f'startTask("{test}")')
 
         time.sleep(110)
@@ -98,7 +103,7 @@ def run_tests(driver, resident_list):
 # Collect test results
 def collect_tests(driver, resident_list):
 
-    print('INFO  Extracting test results from website...')
+    print('INFO   Extracting test results from website...')
 
     for resident in resident_list:
 
@@ -140,7 +145,7 @@ def collect_tests(driver, resident_list):
                 continue
 
             try:
-                print(f'INFO  Processing {test_type} ({test.find_element_by_class_name("taskresultresult").text})')
+                print(f'INFO   Processing {test_type} ({test.find_element_by_class_name("taskresultresult").text})')
             except Exception:
                 pass
 
@@ -173,7 +178,7 @@ def collect_tests(driver, resident_list):
                     if VERBOSE:
                         print('DEBUG  Skipping blank test section...')
             else:
-                print("WARN  Found a test we didn't perform...")
+                print("WARN   Skipping a test we didn't perform...")
 
         resident["tests"] = test_collection
 
@@ -217,7 +222,7 @@ if __name__ == '__main__':
     # Selenium initalization
     #
 
-    print('INFO  Initalizing Selenium...')
+    print('INFO   Initalizing Selenium...')
 
     # Create browser
     driver = webdriver.Firefox()
@@ -238,7 +243,6 @@ if __name__ == '__main__':
     # resident_list = json.load(open('backup.json'))  # DEBUG: Get all the residents from a JSON
     resident_list = get_resident_list(driver)
 
-    get_consent(resident_list)
     run_tests(resident_list)
     collect_tests(resident_list)
     export(resident_list)
