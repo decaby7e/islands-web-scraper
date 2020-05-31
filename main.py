@@ -16,7 +16,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import *
 
 from settings import *
 
@@ -85,8 +85,7 @@ def run_tests(driver, resident_list):
         "temperature",
         "peakflow",
         "vocalfreq",
-        "memorycards",
-        "questionnaire"
+        "memorycards"
     ]
 
     for test in test_list:
@@ -183,6 +182,64 @@ def collect_tests(driver, resident_list):
         resident["tests"] = test_collection
 
 
+def run_questions(driver, resident_list):
+    
+    print('INFO  Asking questions with residents...')
+
+    # question_list = [
+    #     "Did you go to university?",
+    #     "Do you run?",
+    #     "Do you ride a bike?",
+    #     "Do you swim?",
+    #     "Do you smoke?",
+    #     "Do you drink alcohol?",
+    #     "Do you like chocolate?",
+    #     "What is your favorite pizza topping?",
+    #     "How many hours did you sleep last night?",
+    #     "How attractive are you?",
+    #     "Which superpower would you most like to have?"
+    # ]
+
+    question_list = [
+        'Do you cycle?'
+    ]
+
+    for question in question_list:
+        for resident in resident_list:
+            if VERBOSE:
+                print(f'DEBUG  Asking {resident["name"]} {question}')
+
+            driver.get(f"https://islands.smp.uq.edu.au/islander.php?id={resident['id']}")
+            driver.execute_script("change_tab('t3')")
+            try:
+                driver.find_element_by_xpath('//*[@id="chatbox"]').send_keys(question)
+                driver.find_element_by_xpath('/html/body/div[2]/div/div[5]/div[2]/button').click()
+            except ElementNotInteractableException:
+                print(f'WARN   Could not chat with {resident["name"]}. Did they withdraw?')
+
+
+def show_questions(driver, resident_list):
+    
+    print('INFO   Extracting question answers...')
+
+    for resident in resident_list:
+
+        print(f'INFO   {resident["name"]}')
+
+        driver.get(f"https://islands.smp.uq.edu.au/islander.php?id={resident['id']}")
+        driver.execute_script("change_tab('t3')")
+        time.sleep(0.5)
+        questions = driver.find_elements_by_class_name("chatuser")
+        answers = driver.find_elements_by_class_name("chatbot")
+
+        for i in range(len(questions)):
+            if questions[i].text == 'Do you cycle?':
+                print(f'       Bike : {answers[i].text}')
+        
+        print()
+
+
+
 # Export information to CSV / JSON
 def export(resident_list):
 
@@ -225,7 +282,11 @@ if __name__ == '__main__':
     print('INFO   Initalizing Selenium...')
 
     # Create browser
-    driver = webdriver.Firefox()
+    options = Options()
+    options.headless = True
+    driver = webdriver.Firefox(options=options)
+    # driver = webdriver.Firefox()
+
     driver.get("https://islands.smp.uq.edu.au")
 
     # Login
@@ -240,11 +301,15 @@ if __name__ == '__main__':
     # Procedures
     #
 
-    # resident_list = json.load(open('backup.json'))  # DEBUG: Get all the residents from a JSON
-    resident_list = get_resident_list(driver)
+    resident_list = json.load(open('residents.json'))  # DEBUG: Get all the residents from a JSON
+    # resident_list = get_resident_list(driver)
 
-    run_tests(resident_list)
-    collect_tests(resident_list)
-    export(resident_list)
+    # run_tests(driver, resident_list)
+    # run_questions(driver, resident_list)
+
+    # collect_tests(driver, resident_list)
+    # show_questions(driver, resident_list)
+    
+    # export(resident_list)
 
     driver.close()
